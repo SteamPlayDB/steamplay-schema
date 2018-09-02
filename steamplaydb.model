@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.2-alpha" last-position="0,0" last-zoom="1"
+	 default-schema="public" default-owner="postgres">
+<database name="steamplaydb" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="app" rect-visible="true" fill-color="#e1e1e1">
+	<role name="postgres"/>
+</schema>
+
+<table name="user">
+	<schema name="app"/>
+	<role name="postgres"/>
+	<position x="60" y="60"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="username" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="password_md5_aes" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="detail_crypt">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="user_pk" type="pk-constr" table="app.&quot;user&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<schema name="steam" rect-visible="true" fill-color="#e1e1e1">
+	<role name="postgres"/>
+</schema>
+
+<table name="app">
+	<schema name="steam"/>
+	<role name="postgres"/>
+	<position x="760" y="60"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="appid" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="apps_pk" type="pk-constr" table="steam.app">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="report">
+	<schema name="app"/>
+	<role name="postgres"/>
+	<position x="100" y="240"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="is_playable">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="is_completable">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="rating_performance" not-null="true">
+		<type name="int2" length="0"/>
+	</column>
+	<column name="rating_stability" not-null="true">
+		<type name="int2" length="0"/>
+	</column>
+	<column name="driver_type">
+		<type name="char" length="0"/>
+	</column>
+	<column name="driver_version">
+		<type name="decimal" length="0"/>
+	</column>
+	<column name="notes">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="activity_pk" type="pk-constr" table="app.report">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_app" index="9"/>
+		<object name="id_cpu" index="12"/>
+		<object name="id_distro" index="10"/>
+		<object name="id_gpu" index="11"/>
+		<object name="id_user" index="8"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="app_fk" index="2"/>
+		<object name="cpu_fk" index="5"/>
+		<object name="distro_fk" index="3"/>
+		<object name="gpu_fk" index="4"/>
+		<object name="user_fk" index="1"/>
+	</customidxs>
+</table>
+
+<table name="bump">
+	<schema name="app"/>
+	<role name="postgres"/>
+	<position x="100" y="620"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="timeof">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="bump_pk" type="pk-constr" table="app.bump">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_app" index="3"/>
+		<object name="id_user" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="app_fk" index="2"/>
+		<object name="user_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="user_has_many_bump" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#efbcd2"
+	 src-table="app.&quot;user&quot;"
+	 dst-table="app.bump"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="app_has_many_bump" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#615844"
+	 src-table="steam.app"
+	 dst-table="app.bump"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="user_has_many_Report" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#edaed9"
+	 src-table="app.&quot;user&quot;"
+	 dst-table="app.report"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="app_has_many_Report" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#7add1c"
+	 src-table="steam.app"
+	 dst-table="app.report"
+	 src-required="false" dst-required="false"/>
+
+<schema name="os" rect-visible="true" fill-color="#e1e1e1">
+	<role name="postgres"/>
+</schema>
+
+<table name="distro">
+	<schema name="os"/>
+	<role name="postgres"/>
+	<position x="800" y="540"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="version">
+		<type name="decimal" length="0"/>
+	</column>
+	<constraint name="distro_pk" type="pk-constr" table="os.distro">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<schema name="hardware" rect-visible="true" fill-color="#e1e1e1">
+	<role name="postgres"/>
+</schema>
+
+<table name="gpu">
+	<schema name="hardware"/>
+	<role name="postgres"/>
+	<position x="1120" y="260"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="manufacturer" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="model" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="gpu_pk" type="pk-constr" table="hardware.gpu">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="cpu">
+	<schema name="hardware"/>
+	<role name="postgres"/>
+	<position x="1120" y="420"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="manufacturer" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="model" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="cpu_pk" type="pk-constr" table="hardware.cpu">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="distro_has_many_Report" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#143d84"
+	 src-table="os.distro"
+	 dst-table="app.report"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="gpu_has_many_Report" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#38de60"
+	 src-table="hardware.gpu"
+	 dst-table="app.report"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="cpu_has_many_Report" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#d38410"
+	 src-table="hardware.cpu"
+	 dst-table="app.report"
+	 src-required="false" dst-required="false"/>
+
+<table name="log">
+	<schema name="app"/>
+	<role name="postgres"/>
+	<position x="160" y="840"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="event" not-null="true">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="log_pk" type="pk-constr" table="app.log">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_user" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="user_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="user_has_many_log" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#189267"
+	 src-table="app.&quot;user&quot;"
+	 dst-table="app.log"
+	 src-required="false" dst-required="false"/>
+
+<index name="log_index_id_user" table="app.log"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id_user"/>
+		</idxelement>
+</index>
+
+<index name="report_index_id_user" table="app.report"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id_user"/>
+		</idxelement>
+</index>
+
+<index name="report_index_id_app" table="app.report"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id_app"/>
+		</idxelement>
+</index>
+
+<index name="bump_index_id_user" table="app.bump"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="id_user"/>
+		</idxelement>
+</index>
+
+<index name="bump_index_id_app" table="app.bump"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id_app"/>
+		</idxelement>
+</index>
+
+<index name="user_index_id" table="app.&quot;user&quot;"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id"/>
+		</idxelement>
+</index>
+
+<index name="user_index_username" table="app.&quot;user&quot;"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="username"/>
+		</idxelement>
+</index>
+
+<index name="app_index_id" table="steam.app"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id"/>
+		</idxelement>
+</index>
+
+<index name="app_index_appid" table="steam.app"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="appid"/>
+		</idxelement>
+</index>
+
+<index name="app_index_name" table="steam.app"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="name"/>
+		</idxelement>
+</index>
+
+</dbmodel>
